@@ -21,7 +21,9 @@ CFLAGS += -m$(WORD)
 endif
 CFLAGS += -I. -Ilittlefs
 CFLAGS += -std=c99 -Wall -pedantic
-
+CFLAGS += -s WASM=0
+CFLAGS += -s EXPORTED_RUNTIME_METHODS=ccall,cwrap,addFunction,lengthBytesUTF8
+CFLAGS += -s EXPORTED_FUNCTIONS=_free,_malloc
 CFLAGS += -s RESERVED_FUNCTION_POINTERS=20
 
 

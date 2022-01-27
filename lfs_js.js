@@ -1,7 +1,7 @@
 
 // configurable constants
 var LFS_READ_SIZE = 64
-var LFS_PROG_SIZE = 64 
+var LFS_PROG_SIZE = 64
 var LFS_BLOCK_SIZE = 512
 var LFS_LOOKAHEAD = 512
 
@@ -51,33 +51,33 @@ function LFS(bd, read_size, prog_size, block_size, lookahead) {
     // wrap bd functions in C runtime
     // needs global thunks due to emscripten limitations
     if (!LFS._readptr) {
-        LFS._readptr = Runtime.addFunction(function(cfg,
+        LFS._readptr = Module.addFunction(function(cfg,
                 block, off, buffer, size) {
             return LFS._readthunk(block, off, buffer, size)
         })
     }
 
     if (!LFS._progptr) {
-        LFS._progptr = Runtime.addFunction(function(cfg,
+        LFS._progptr = Module.addFunction(function(cfg,
                 block, off, buffer, size) {
             return LFS._progthunk(block, off, buffer, size)
         })
     }
 
     if (!LFS._eraseptr) {
-        LFS._eraseptr = Runtime.addFunction(function(cfg, block) {
+        LFS._eraseptr = Module.addFunction(function(cfg, block) {
             return LFS._erasethunk(block)
         })
     }
 
     if (!LFS._syncptr) {
-        LFS._syncptr = Runtime.addFunction(function(cfg) {
+        LFS._syncptr = Module.addFunction(function(cfg) {
             return LFS._syncthunk()
         })
     }
 
     if (!LFS._traverseptr) {
-        LFS._traverseptr = Runtime.addFunction(function(cfg, block) {
+        LFS._traverseptr = Module.addFunction(function(cfg, block) {
             return LFS._traversethunk(block)
         })
     }
@@ -305,8 +305,7 @@ LFS.File.prototype.read = function(size) {
 
 LFS.File.prototype.write = function(string) {
     var buffer = Module._malloc(string.length)
-    writeStringToMemory(string, buffer, true)
-    
+    stringToUTF8(string, buffer, lengthBytesUTF8(string))
     var res = this.lfs._lfs_file_write(this.lfs._lfs, this._file,
             buffer, string.length)
     Module._free(buffer)
